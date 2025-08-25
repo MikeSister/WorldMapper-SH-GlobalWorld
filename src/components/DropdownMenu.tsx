@@ -61,7 +61,7 @@ export const DropdownMenu: React.FC<DropdownMenuProps> = ({
   return (
     <MenuContainer $visible={isVisible}>
       <MenuItem onClick={onFilterClick}>
-        <span>Filter Ports</span>
+        <span>Filter</span>
       </MenuItem>
     </MenuContainer>
   );

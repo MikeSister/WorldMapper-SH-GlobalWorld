@@ -1,9 +1,8 @@
-import styled, { keyframes } from "styled-components";
+import styled from "styled-components";
 import { BarContainer } from "./Container";
 import { IconButton } from "../Icon";
 import { useAppSelector } from "../../redux/hook";
 import { useDataLoader } from "../../hooks/loader";
-import { DropdownMenu } from "../DropdownMenu";
 import { useState, useRef, useEffect } from "react";
 
 const FlexBox = styled.div`
@@ -63,15 +62,12 @@ export const TopBar: React.FC<TopBarProps> = ({
     };
   }, []);
 
-  const handleMenuClick = () => {
-    setIsMenuVisible(!isMenuVisible);
-  };
 
   return (
     <BarContainer position="top">
       <FlexBox>
         <MenuContainer ref={menuRef}>
-          <IconButton icon="menu" onClick={handleMenuClick} />
+          <IconButton icon="filter" onClick={onMenuClick} />
           {onAISummaryToggle && (
             <IconButton
               icon="robot"
@@ -95,13 +91,6 @@ export const TopBar: React.FC<TopBarProps> = ({
               }}
             />
           )}
-          <DropdownMenu
-            isVisible={isMenuVisible}
-            onFilterClick={() => {
-              onMenuClick();
-              setIsMenuVisible(false);
-            }}
-          />
         </MenuContainer>
       </FlexBox>
       <FlexBox style={{ lineHeight: 1 }}>
