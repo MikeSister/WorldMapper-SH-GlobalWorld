@@ -85,7 +85,7 @@ const Timeline = () => {
   const currentYear = useAppSelector((state) => state.year.currentYear);
 
   const years = useAppSelector((state) => {
-    return (state.loader.data?.outsourcingEmployeeData || []).map(
+    return (state.loader.data?.earthData || []).map(
       (item) => item.year + ""
     );
   });

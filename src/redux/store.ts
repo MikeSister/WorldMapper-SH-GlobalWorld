@@ -72,8 +72,7 @@ interface LoaderState {
   loaded?: boolean;
   error?: string;
   data?: {
-    outsourcingEmployeeData: OutsourceEmployeeType[];
-    statistics: StatisticsType;
+    earthData: OutsourceEmployeeType[];
   };
 }
 const loaderInitialState: LoaderState = {};
@@ -89,8 +88,7 @@ const loaderSlice = createSlice({
     loaderSuccess(
       state,
       action: PayloadAction<{
-        outsourcingEmployeeData: OutsourceEmployeeType[];
-        statistics: StatisticsType;
+        earthData: OutsourceEmployeeType[];
       }>
     ) {
       state.loading = false;

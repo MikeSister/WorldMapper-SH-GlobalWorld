@@ -36,20 +36,20 @@ export const GlobeEarth = (props: {
 
   const currentYear = useAppSelector((state) => state.year.currentYear);
 
-  const outsourcingEmployeeData = useAppSelector(
-    (state) => state.loader.data?.outsourcingEmployeeData
+  const earthData = useAppSelector(
+    (state) => state.loader.data?.earthData
   );
 
   const setGlobe = () => {
     const globe = refGlobe.current!;
-    if (!outsourcingEmployeeData || !currentYear) {
+    if (!earthData || !currentYear) {
       globe.arcsData([]).labelsData([]);
       return;
     }
 
     setLabels(
       globe,
-      outsourcingEmployeeData.find((item) => item.year === currentYear)?.data ||
+      earthData.find((item) => item.year === currentYear)?.data ||
         []
     );
   };
@@ -66,7 +66,7 @@ export const GlobeEarth = (props: {
 
   useEffect(() => {
     setGlobe();
-  }, [outsourcingEmployeeData, currentYear]);
+  }, [earthData, currentYear]);
 
   useEffect(() => {
     if (refGlobe.current && refContainer.current) {

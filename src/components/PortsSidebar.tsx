@@ -124,10 +124,9 @@ const PortsSidebar: React.FC<PortsSidebarProps> = ({
   const dispatch = useAppDispatch();
   const selectedPorts = useAppSelector((state) => state.ports.selectedPorts);
   const currentYear = useAppSelector((state) => state.year.currentYear);
-  const outsourcingData = useAppSelector((state) => state.loader.data?.outsourcingEmployeeData);
-  const statistics = useAppSelector((state) => state.loader.data?.statistics);
+  const outsourcingData = useAppSelector((state) => state.loader.data?.earthData);
 
-  // 从 outsourcingEmployeeData.json 动态获取港口列表
+  // 从 earthData.json 动态获取港口列表
   const ports = React.useMemo(() => {
     if (!outsourcingData || !currentYear) return [];
     

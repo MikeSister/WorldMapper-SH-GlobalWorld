@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../redux/hook";
-import outsourcingEmployeeDataJSON from "../data/outsourcingEmployeeData.json";
+import demoData from "../data/demo.json";
 import aiJSON from "../data/ai.json";
 import {
   loaderStart,
@@ -19,21 +19,15 @@ export const useWeekDataLoader = () => {
   return useCallback(() => {
     dispatch(loaderStart());
     
-    // Load statistics data
-    return fetch('/data/statistics.json')
-      .then(response => response.json())
-      .then(statistics => {
-        return Promise.resolve({
-          outsourcingEmployeeData: outsourcingEmployeeDataJSON.concat([]),
-          statistics: statistics,
-        });
-      })
+    return Promise.resolve({
+          earthData: demoData.concat([]),
+        })
       .then((res) => {
         setTimeout(() => {
           dispatch(loaderSuccess(res));
-          const length = res.outsourcingEmployeeData.length;
+          const length = res.earthData.length;
           dispatch(
-            setCurrentYear(res.outsourcingEmployeeData[length - 1].year + "")
+            setCurrentYear(res.earthData[length - 1].year + "")
           );
         }, 1200);
       })
