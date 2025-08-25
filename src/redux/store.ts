@@ -2,7 +2,7 @@ import { configureStore, createSlice, type PayloadAction } from '@reduxjs/toolki
 import type { EarthDataItem } from '../type';
 
 interface YearState {
-    currentYear: string;
+    currentYear: number;
 }
 
 interface PortsState {
@@ -10,7 +10,7 @@ interface PortsState {
 }
 
 const yearInitialState: YearState = {
-    currentYear: '',
+    currentYear: new Date().getFullYear(),
 };
 
 const portsInitialState: PortsState = {
@@ -21,7 +21,7 @@ const yearSlice = createSlice({
     name: 'year',
     initialState: yearInitialState,
     reducers: {
-        setCurrentYear: (state, action: PayloadAction<string>) => {
+        setCurrentYear: (state, action: PayloadAction<number>) => {
             state.currentYear = action.payload;
         },
     },

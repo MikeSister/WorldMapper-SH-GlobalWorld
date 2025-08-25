@@ -23,7 +23,7 @@ export interface LocationInfo {
     latitude: number;
     /** 经度 */
     longitude: number;
-    /** 地点 */
+    /** 地点(可表示城市、港口等) */
     location: string;
 }
 
@@ -33,7 +33,9 @@ export interface EarthDataItem {
     from: LocationInfo;
     /** 目的地 */
     to: LocationInfo;
-    /** 数量值 */
+    /** 日期 */
+    date: string;
+    /** 数量值（根据业务常见的不同可表示不同概念，比如出货量、员工人数等） */
     quantity: number;
     /** 自定义标签 */
     tags?: Record<string, unknown>;

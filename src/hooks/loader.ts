@@ -12,6 +12,8 @@ import {
   setCurrentYear,
 } from "../redux/store";
 import axios from "axios";
+import type { EarthDataItem } from "../type";
+import dayjs from "dayjs";
 
 export const useWeekDataLoader = () => {
   const dispatch = useAppDispatch();
@@ -20,14 +22,13 @@ export const useWeekDataLoader = () => {
     dispatch(loaderStart());
     
     return Promise.resolve({
-          earthData: demoData.concat([]),
+          earthData: demoData.concat([]) as unknown as EarthDataItem[],
         })
       .then((res) => {
         setTimeout(() => {
           dispatch(loaderSuccess(res));
-          const length = res.earthData.length;
           dispatch(
-            setCurrentYear(res.earthData[length - 1].year + "")
+            setCurrentYear(dayjs(res.earthData[0].date).year())
           );
         }, 1200);
       })
