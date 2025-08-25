@@ -2,7 +2,7 @@ import styled, { keyframes } from "styled-components";
 import { BarContainer } from "./Container";
 import { IconButton } from "../Icon";
 import { useAppSelector } from "../../redux/hook";
-import { useWeekDataLoader } from "../../hooks/loader";
+import { useDataLoader } from "../../hooks/loader";
 import { DropdownMenu } from "../DropdownMenu";
 import { useState, useRef, useEffect } from "react";
 
@@ -48,7 +48,7 @@ export const TopBar: React.FC<TopBarProps> = ({
 
   const loading = useAppSelector((state) => state.loader.loading);
   const loaded = useAppSelector((state) => state.loader.loaded);
-  const loadData = useWeekDataLoader();
+  const loadData = useDataLoader();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

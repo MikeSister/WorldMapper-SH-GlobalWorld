@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import PortsSidebar from "./components/PortsSidebar";
 import { BottomBar } from "./components/bar/BottomBar";
 import { TopBar } from "./components/bar/TopBar";
-import { useAISummary, useWeekDataLoader } from "./hooks/loader";
+import { useAISummary, useDataLoader } from "./hooks/loader";
 import { GlobeEarth } from "./components/globe/Earth";
 import styled from "styled-components";
 import AISummaryChat from "./components/AISummaryChat";
@@ -29,7 +29,7 @@ const App: React.FC = () => {
   const [isAISummaryExpanded, setIsAISummaryExpanded] =
     useState<boolean>(false);
 
-  const loadData = useWeekDataLoader();
+  const loadData = useDataLoader();
 
   useEffect(() => {
     loadData();

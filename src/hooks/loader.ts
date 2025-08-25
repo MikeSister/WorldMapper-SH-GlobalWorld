@@ -15,7 +15,7 @@ import axios from "axios";
 import type { EarthDataItem } from "../type";
 import dayjs from "dayjs";
 
-export const useWeekDataLoader = () => {
+export const useDataLoader = () => {
   const dispatch = useAppDispatch();
   const currentYear = useAppSelector((state) => state.year.currentYear);
   return useCallback(() => {
