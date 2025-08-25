@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useAppDispatch, useAppSelector } from "../redux/hook";
 import { togglePort, selectAllPorts, clearSelectedPorts } from "../redux/store";
 import { Icon, IconButton } from "./Icon";
+import type { EarthDataItem, LocationInfo } from "../type";
 
 interface PortsSidebarProps {
   isCollapsed: boolean;
@@ -122,42 +123,72 @@ const PortsSidebar: React.FC<PortsSidebarProps> = ({
   onToggleCollapse,
 }) => {
   const dispatch = useAppDispatch();
-  const selectedPorts = useAppSelector((state) => state.ports.selectedPorts);
+  const selectedLocations = useAppSelector((state) => state.ports.selectedLocations);
   const currentYear = useAppSelector((state) => state.year.currentYear);
-  const outsourcingData = useAppSelector((state) => state.loader.data?.earthData);
+  // 现在 loader.data?.earthData 应为 EarthDataItem[]
+  const earthData = useAppSelector((state) => state.loader.data?.earthData as EarthDataItem[] | undefined);
 
-  // 从 earthData.json 动态获取港口列表
-  const ports = React.useMemo(() => {
-    if (!outsourcingData || !currentYear) return [];
-    
-    const yearData = outsourcingData.find(item => item.year === currentYear);
-    if (!yearData) return [];
-    
-    return yearData.data
-      .map(item => item.city)
-      .sort((a, b) => {
-        const employeeA = yearData.data.find(item => item.city === a)?.employeeCount || 0;
-        const employeeB = yearData.data.find(item => item.city === b)?.employeeCount || 0;
-        return employeeB - employeeA; // 按员工数量降序排列
-      });
-  }, [outsourcingData, currentYear]);
+  // 从 earthData (EarthDataItem[]) 动态聚合港口列表（包含 from/to），并按当年累计 quantity 降序排序
+  interface PortSummary {
+    city: string;
+    latitude: number;
+    longitude: number;
+    totalQuantity: number;
+  }
 
-  // 获取当前选中港口的员工数据
+  const portsSummary = React.useMemo<PortSummary[]>(() => {
+    if (!earthData || !currentYear) return [];
+
+    // 仅保留与 currentYear 匹配的条目
+    const yearItems = earthData.filter((it: EarthDataItem) => {
+      if (!it?.date) return false;
+      const d = new Date(it.date);
+      if (Number.isNaN(d.getTime())) return false;
+      return d.getFullYear() === Number(currentYear);
+    });
+
+    const map = new Map<string, PortSummary>();
+
+    yearItems.forEach((item) => {
+      const qty = typeof item.quantity === "number" ? item.quantity : 0;
+
+      const add = (loc: LocationInfo | undefined) => {
+        if (!loc || !loc.location) return;
+        const name = loc.location;
+        const existing = map.get(name);
+        if (existing) {
+          existing.totalQuantity += qty;
+        } else {
+          map.set(name, {
+            city: name,
+            latitude: loc.latitude ?? 0,
+            longitude: loc.longitude ?? 0,
+            totalQuantity: qty,
+          });
+        }
+      };
+
+      add(item.from);
+      add(item.to);
+    });
+
+    return Array.from(map.values()).sort((a, b) => b.totalQuantity - a.totalQuantity);
+  }, [earthData, currentYear]);
+
+  const ports = React.useMemo(() => portsSummary.map((p) => p.city), [portsSummary]);
+
+  // 获取当前选中港口的汇总数据（基于 totalQuantity）
   const selectedPortsData = React.useMemo(() => {
-    if (!outsourcingData || !currentYear) return [];
-    
-    const yearData = outsourcingData.find(item => item.year === currentYear);
-    if (!yearData) return [];
-    
-    return yearData.data.filter(item => selectedPorts.includes(item.city));
-  }, [outsourcingData, currentYear, selectedPorts]);
+    if (!portsSummary || portsSummary.length === 0 || !selectedLocations) return [];
+    return portsSummary.filter((p) => selectedLocations.includes(p.city));
+  }, [portsSummary, selectedLocations]);
 
   const handlePortToggle = (portId: string) => {
     dispatch(togglePort(portId));
   };
 
   const handleSelectAll = () => {
-    if (selectedPorts.length === ports.length) {
+    if (selectedLocations.length === ports.length) {
       dispatch(clearSelectedPorts());
     } else {
       dispatch(selectAllPorts(ports.concat([])));
@@ -175,12 +206,12 @@ const PortsSidebar: React.FC<PortsSidebarProps> = ({
           <SectionHeader>
             <span>Filter Ports</span>
             <div style={{ display: "flex" }}>
-              {selectedPorts.length > 0 && (
+              {selectedLocations.length > 0 && (
                 <IconButton icon="ban" onClick={handleClearAll} />
               )}
               <IconButton
                 icon={
-                  selectedPorts.length === ports.length
+                  selectedLocations.length === ports.length
                     ? "check-circle-fill"
                     : "check-circle"
                 }
@@ -191,28 +222,26 @@ const PortsSidebar: React.FC<PortsSidebarProps> = ({
           </SectionHeader>
           <MainContent>
             <PortsBox>
-              <h5>All Ports ({currentYear})</h5>
+              <h5>All Locations ({currentYear})</h5>
               <PortsGrid>
                 {ports.map((port: string) => {
-                  const portData = outsourcingData
-                    ?.find(item => item.year === currentYear)
-                    ?.data.find(item => item.city === port);
-                  const employeeCount = portData?.employeeCount || 0;
-                  
+                  const summary = portsSummary.find((p) => p.city === port);
+                  const total = summary?.totalQuantity || 0;
+
                   return (
                     <PortTag
                       key={port}
-                      $selected={selectedPorts.includes(port)}
+                      $selected={selectedLocations.includes(port)}
                       onClick={() => handlePortToggle(port)}
                     >
                       <span data-width={port.length > 9 ? "wide" : "normal"}>
                         {port}
                         <br />
                         <small style={{ opacity: 0.8, fontSize: "10px" }}>
-                          ({employeeCount})
+                          ({total})
                         </small>
                       </span>
-                      {selectedPorts.includes(port) && (
+                      {selectedLocations.includes(port) && (
                         <span data-selected="true">
                           <Icon type="check" />
                         </span>
@@ -225,7 +254,7 @@ const PortsSidebar: React.FC<PortsSidebarProps> = ({
             
             {selectedPortsData.length > 0 && (
               <PortsBox>
-                <h5>Selected Ports Summary</h5>
+                <h5>Selected Locations Summary</h5>
                 <div style={{ 
                   padding: "10px", 
                   background: "rgba(77, 208, 225, 0.1)", 
@@ -233,18 +262,21 @@ const PortsSidebar: React.FC<PortsSidebarProps> = ({
                   fontSize: "12px"
                 }}>
                   <div>Total Selected: {selectedPortsData.length}</div>
-                  <div>Total Employees: {selectedPortsData.reduce((sum, port) => sum + port.employeeCount, 0)}</div>
+                  <div>Total Quantity: {selectedPortsData.reduce((sum, port) => sum + (port.totalQuantity || 0), 0)}</div>
                   <div style={{ marginTop: "8px" }}>
                     {selectedPortsData
-                      .sort((a, b) => b.employeeCount - a.employeeCount)
-                      .map(port => (
-                        <div key={port.city} style={{ 
-                          display: "flex", 
-                          justifyContent: "space-between",
-                          marginBottom: "2px"
-                        }}>
+                      .sort((a, b) => b.totalQuantity - a.totalQuantity)
+                      .map((port) => (
+                        <div
+                          key={port.city}
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginBottom: "2px",
+                          }}
+                        >
                           <span>{port.city}</span>
-                          <span>{port.employeeCount}</span>
+                          <span>{port.totalQuantity}</span>
                         </div>
                       ))}
                   </div>

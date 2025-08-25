@@ -85,15 +85,20 @@ const Timeline = () => {
   const currentYear = useAppSelector((state) => state.year.currentYear);
 
   const years = useAppSelector((state) => {
-    return (state.loader.data?.earthData || []).map(
-      (item) => item.year + ""
-    );
+    const ys = (state.loader.data?.earthData || [])
+      .map((item: any) => {
+        const d = new Date(item.date);
+        return Number.isNaN(d.getTime()) ? null : d.getFullYear();
+      })
+      .filter((y: number | null) => y !== null) as number[];
+    // unique and sorted
+    return Array.from(new Set(ys)).sort((a, b) => a - b);
   });
 
-  const currentIndex = years.indexOf(currentYear);
+  const currentIndex = years.indexOf(currentYear as number);
   const dispatch = useAppDispatch();
 
-  const handleDotClick = (year: string) => {
+  const handleDotClick = (year: number) => {
     dispatch(setCurrentYear(year));
   };
 

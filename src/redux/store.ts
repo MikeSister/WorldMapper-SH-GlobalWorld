@@ -6,7 +6,7 @@ interface YearState {
 }
 
 interface PortsState {
-    selectedPorts: string[];
+    selectedLocations: string[];
 }
 
 const yearInitialState: YearState = {
@@ -14,7 +14,7 @@ const yearInitialState: YearState = {
 };
 
 const portsInitialState: PortsState = {
-    selectedPorts: [],
+    selectedLocations: [],
 };
 
 const yearSlice = createSlice({
@@ -33,18 +33,18 @@ const portsSlice = createSlice({
     reducers: {
         togglePort: (state, action: PayloadAction<string>) => {
             const port = action.payload;
-            const index = state.selectedPorts.indexOf(port);
+            const index = state.selectedLocations.indexOf(port);
             if (index === -1) {
-                state.selectedPorts.push(port);
+                state.selectedLocations.push(port);
             } else {
-                state.selectedPorts.splice(index, 1);
+                state.selectedLocations.splice(index, 1);
             }
         },
         selectAllPorts: (state, action: PayloadAction<string[]>) => {
-            state.selectedPorts = action.payload;
+            state.selectedLocations = action.payload;
         },
         clearSelectedPorts: (state) => {
-            state.selectedPorts = [];
+            state.selectedLocations = [];
         },
     },
 });
@@ -99,7 +99,7 @@ const loaderSlice = createSlice({
 const { loaderStart, loaderSuccess, loaderFail } = loaderSlice.actions;
 export { loaderStart, loaderSuccess, loaderFail };
 
-type AISummaryData = { content: string; week: string };
+type AISummaryData = { content: string; week: number };
 type AISummaryState = LoadingState<Partial<AISummaryData>>;
 
 const aiSummarySlice = createSlice({

@@ -27,9 +27,8 @@ export const useDataLoader = () => {
       .then((res) => {
         setTimeout(() => {
           dispatch(loaderSuccess(res));
-          dispatch(
-            setCurrentYear(dayjs(res.earthData[0].date).year())
-          );
+          const y = dayjs(res.earthData[0].date).year();
+          dispatch(setCurrentYear(Number(y)));
         }, 1200);
       })
       .catch((err) => {
@@ -38,11 +37,11 @@ export const useDataLoader = () => {
   }, [currentYear]);
 };
 
-const requestAI = (week: string): Promise<{ data: string }> => {
+const requestAI = (week: number | string): Promise<{ data: string }> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        data: (aiJSON as any)[week],
+  data: (aiJSON as any)[String(week)],
       });
     }, 1200);
   });
@@ -68,7 +67,7 @@ export const useAISummary = () => {
   refWeek.current = currentYear;
 
   useEffect(() => {
-    const week = currentYear;
+  const week = currentYear;
     if (!week) {
       return;
     }
@@ -78,7 +77,7 @@ export const useAISummary = () => {
         if (week !== refWeek.current) {
           return;
         }
-        dispatch(aiSummarySuccess({ content: res.data as string, week }));
+    dispatch(aiSummarySuccess({ content: res.data as string, week }));
       })
       .catch((err) => {
         if (week !== refWeek.current) {

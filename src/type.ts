@@ -1,20 +1,3 @@
-export interface PortInfo {
-    lat: number;
-    lng: number;
-}
-
-export interface EmployeeType {
-    city: string;
-    lat: number;
-    lng: number;
-    employeeCount: number;
-}
-
-export interface OutsourceEmployeeType {
-    year: string;
-    data: EmployeeType[];
-}
-
 /** 地点信息 */
 export interface LocationInfo {
     /** 国家 */
@@ -40,3 +23,10 @@ export interface EarthDataItem {
     /** 自定义标签 */
     tags?: Record<string, unknown>;
 }
+
+export type LocationQuantityInfo = {
+    location: string;
+    latitude: number;
+    longitude: number;
+    quantity: number;
+};
