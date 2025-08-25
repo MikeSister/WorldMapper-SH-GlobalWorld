@@ -26,7 +26,6 @@ const GlobeContainer = styled.div`
 `;
 
 export const GlobeEarth = (props: {
-  isDashboardCollapsed?: boolean;
   isPortSidebarCollapsed: boolean;
   showHelp?: boolean;
   onHelpToggle?: () => void;
@@ -77,11 +76,6 @@ export const GlobeEarth = (props: {
       // Calculate horizontal offset based on both sidebars
       let translateX = 0;
 
-      // Adjust for dashboard sidebar (left side)
-      if (!props.isDashboardCollapsed) {
-        translateX -= containerWidth * 0.1; // Move left when dashboard is expanded
-      }
-
       // Adjust for port sidebar (right side)
       if (!props.isPortSidebarCollapsed) {
         translateX += containerWidth * 0.1; // Move right when port sidebar is expanded
@@ -90,7 +84,7 @@ export const GlobeEarth = (props: {
       // Apply the calculated transform to center the globe
       container.style.transform = `translateX(${translateX}px)`;
     }
-  }, [props.isDashboardCollapsed, props.isPortSidebarCollapsed]);
+  }, [props.isPortSidebarCollapsed]);
 
   // Setup keyboard shortcuts
   const { shortcuts } = useKeyboardShortcuts({
