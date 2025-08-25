@@ -105,7 +105,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         </MenuContainer>
       </FlexBox>
       <FlexBox style={{ lineHeight: 1 }}>
-        <HeaderTitle>▪ Global World Employee Count Dashboard ▪</HeaderTitle>
+        <HeaderTitle>▪ Dashboard ▪</HeaderTitle>
       </FlexBox>
       <FlexBox
         style={{

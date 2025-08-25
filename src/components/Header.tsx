@@ -26,7 +26,7 @@ const HeaderContainer = styled.div`
 `;
 
 const Header: React.FC<HeaderProps> = ({
-  title = "Global World Employee Count Dashboard",
+  title = "Dashboard",
 }) => {
   return <HeaderContainer>▪ {title} ▪</HeaderContainer>;
 };
