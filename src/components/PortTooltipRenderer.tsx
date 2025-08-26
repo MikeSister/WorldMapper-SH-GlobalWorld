@@ -3,5 +3,5 @@ import PortTooltip from "./PortTooltip";
 import type { LocationQuantityInfo } from "../type";
 
 export const renderPortTooltip = (props: LocationQuantityInfo): string => {
-  return ReactDOMServer.renderToString(<PortTooltip {...(props as any)} />);
+  return ReactDOMServer.renderToString(<PortTooltip {...props} />);
 };

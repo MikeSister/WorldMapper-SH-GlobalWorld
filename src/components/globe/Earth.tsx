@@ -9,6 +9,18 @@ import { styled } from 'styled-components';
 import { useKeyboardShortcuts, ShortcutsHelp } from '../../hooks/useKeyboardShortcuts';
 import type { LocationInfo, LocationQuantityInfo } from '../../type';
 
+// Arc datum type for globe arcs
+interface ArcDatum {
+    startLat: number;
+    startLng: number;
+    endLat: number;
+    endLng: number;
+    color: string | string[];
+    altitude: number;
+    stroke: number;
+    quantity: number;
+}
+
 const GlobeContainer = styled.div`
     width: 100%;
     height: 100%;
@@ -87,6 +99,84 @@ export const GlobeEarth = (props: {
 
         const labelsData = Object.values(map);
         setLabels(globe, labelsData);
+
+        // --- build arcs data from filteredItems ---
+        // skip items without valid from/to coords
+        const validArcs = filteredItems.filter((it) => it.from && it.to && it.from.latitude != null && it.from.longitude != null && it.to.latitude != null && it.to.longitude != null);
+        const maxQty = Math.max(1, ...validArcs.map((it) => Math.max(0, it.quantity ?? 0)));
+
+        const arcs: ArcDatum[] = validArcs.map((it) => {
+            const qty = Math.max(0, it.quantity ?? 0);
+            const norm = qty / maxQty;
+
+            // compute central angle (radians) between two points on unit sphere
+            const toRad = (deg: number) => (deg * Math.PI) / 180;
+            const lat1 = toRad(it.from!.latitude);
+            const lng1 = toRad(it.from!.longitude);
+            const lat2 = toRad(it.to!.latitude);
+            const lng2 = toRad(it.to!.longitude);
+            const cosC = Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1);
+            const central = Math.max(0, Math.min(Math.PI, Math.acos(cosC)));
+
+            // altitude increases with central angle so long routes arc higher over globe
+            const baseAlt = 0.03; // minimal altitude
+            const distanceFactor = (central / Math.PI) * 0.6; // up to 0.6 for antipodal
+            const altitude = Math.min(0.9, baseAlt + distanceFactor + norm * 0.08);
+
+            // slimmer strokes and scale with quantity
+            const stroke = Math.max(0.12, Math.min(1.6, 0.25 + norm * 1.1));
+
+            // more muted semi-transparent colors
+            const startColor = 'rgba(0,100,90,0.7)';
+            const endColor = 'rgba(200,120,80,0.65)';
+
+            return {
+                startLat: it.from!.latitude,
+                startLng: it.from!.longitude,
+                endLat: it.to!.latitude,
+                endLng: it.to!.longitude,
+                color: [startColor, endColor],
+                altitude,
+                stroke,
+                quantity: qty,
+            };
+        });
+
+        // apply arcs to globe with common callbacks
+        globe
+            .arcsData(arcs)
+            .arcStartLat((obj: object) => {
+                const d = obj as ArcDatum;
+                return d.startLat;
+            })
+            .arcStartLng((obj: object) => {
+                const d = obj as ArcDatum;
+                return d.startLng;
+            })
+            .arcEndLat((obj: object) => {
+                const d = obj as ArcDatum;
+                return d.endLat;
+            })
+            .arcEndLng((obj: object) => {
+                const d = obj as ArcDatum;
+                return d.endLng;
+            })
+            .arcColor((obj: object) => {
+                const d = obj as ArcDatum;
+                return d.color;
+            })
+            .arcAltitude((obj: object) => {
+                const d = obj as ArcDatum;
+                return d.altitude;
+            })
+            .arcStroke((obj: object) => {
+                const d = obj as ArcDatum;
+                return d.stroke;
+            })
+            .arcDashLength(0.18)
+            .arcDashGap(0.12)
+            .arcDashInitialGap(() => Math.random())
+            .arcDashAnimateTime(4000);
     };
 
     useEffect(() => {

@@ -66,13 +66,15 @@ export const setLabels = (globe: GlobeInstance, earthData: LocationQuantityInfo[
     labelLinesGroup.name = 'labelLinesGroup';
     const RADIUS = globe.getGlobeRadius ? globe.getGlobeRadius() : 1; // fallback to 1 if not available
     // build points from labels (labels are aggregated entries with from & quantity)
-    const labelPoints = labels.map((d) => ({
+    type LabelPoint = { port: string; lat: number; lng: number };
+
+    const labelPoints: LabelPoint[] = labels.map((d) => ({
         port: d.location,
         lat: d.latitude,
         lng: d.longitude,
     }));
 
-    labelPoints.forEach((d: any) => {
+    labelPoints.forEach((d: LabelPoint) => {
         const alt = labelAltitudes[d.port] || 0;
         if (alt > 0) {
             // Convert lat/lng to 3D positions

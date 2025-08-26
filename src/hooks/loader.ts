@@ -40,8 +40,9 @@ export const useDataLoader = () => {
 const requestAI = (week: number | string): Promise<{ data: string }> => {
   return new Promise((resolve) => {
     setTimeout(() => {
+      const aiMap = aiJSON as Record<string, string>;
       resolve({
-  data: (aiJSON as any)[String(week)],
+        data: aiMap[String(week)],
       });
     }, 1200);
   });
