@@ -35,6 +35,8 @@ export const GlobeEarth = (props: {
     const currentYear = useAppSelector((state) => state.year.currentYear);
 
     const earthData = useAppSelector((state) => state.loader.data?.earthData);
+    const selectedLocations = useAppSelector((state) => state.ports.selectedLocations);
+    console.log(`selectedLocations===`,selectedLocations);
 
     const setGlobe = () => {
         const globe = refGlobe.current!;
@@ -55,9 +57,22 @@ export const GlobeEarth = (props: {
             return d.getFullYear() === Number(currentYear);
         });
 
+        // 如果有选中的港口，仅保留包含选中港口的条目（from 或 to 在 selectedLocations 中）
+        const filteredItems =
+            selectedLocations && selectedLocations.length > 0
+                ? yearItems.filter((it) => {
+                      const fromName = it.from?.location;
+                      const toName = it.to?.location;
+                      return (
+                          (fromName && selectedLocations.includes(fromName)) ||
+                          (toName && selectedLocations.includes(toName))
+                      );
+                  })
+                : yearItems;
+
         // aggregate totals by city (use from and to locations)
         const map: Record<string, LocationQuantityInfo> = {};
-        yearItems.forEach((it) => {
+        filteredItems.forEach((it) => {
             const qty = it.quantity ?? 0;
             const add = (loc: LocationInfo) => {
                 if (!loc || !loc.location) return;
@@ -86,7 +101,7 @@ export const GlobeEarth = (props: {
 
     useEffect(() => {
         setGlobe();
-    }, [earthData, currentYear]);
+    }, [earthData, currentYear, selectedLocations]);
 
     useEffect(() => {
         if (refGlobe.current && refContainer.current) {
