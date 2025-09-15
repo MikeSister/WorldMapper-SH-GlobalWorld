@@ -24,29 +24,36 @@ const MenuContainer = styled.div`
 
 const ViewToggleContainer = styled.div`
     display: flex;
-    gap: 8px;
-    background: rgba(0, 0, 0, 0.1);
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(10px);
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 4px;
-    margin-left: 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 3px;
 `;
 
 const ViewToggleButton = styled.button<{ $isActive: boolean }>`
-    padding: 8px 16px;
+    padding: 6px 12px;
     border: none;
-    border-radius: 6px;
-    background: ${(props) => (props.$isActive ? 'rgba(255, 255, 255, 0.2)' : 'transparent')};
-    color: ${(props) => (props.$isActive ? '#ffffff' : '#cccccc')};
-    font-size: 14px;
-    font-weight: ${(props) => (props.$isActive ? '600' : '400')};
+    border-radius: 4px;
+    background: ${(props) => (props.$isActive ? 'rgba(131, 238, 252, 0.25)' : 'transparent')};
+    color: ${(props) => (props.$isActive ? '#83eefc' : '#aaaaaa')};
+    font-size: 12px;
+    font-weight: ${(props) => (props.$isActive ? '700' : '500')};
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
+    min-width: 48px;
+    text-shadow: ${(props) => (props.$isActive ? '0 0 8px rgba(131, 238, 252, 0.6)' : 'none')};
+    box-shadow: ${(props) => (props.$isActive ? '0 0 0 1px rgba(131, 238, 252, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1)' : 'none')};
 
     &:hover {
-        background: ${(props) => (props.$isActive ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.1)')};
-        color: #ffffff;
+        background: ${(props) => (props.$isActive ? 'rgba(131, 238, 252, 0.35)' : 'rgba(255, 255, 255, 0.08)')};
+        color: ${(props) => (props.$isActive ? '#83eefc' : '#ffffff')};
+        transform: translateY(-1px);
+    }
+
+    &:active {
+        transform: translateY(0);
     }
 `;
 
