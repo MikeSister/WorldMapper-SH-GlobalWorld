@@ -94,7 +94,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         </MenuContainer>
       </FlexBox>
       <FlexBox style={{ lineHeight: 1 }}>
-        <HeaderTitle>▪ Dashboard ▪</HeaderTitle>
+        {/* <HeaderTitle>▪ Dashboard ▪</HeaderTitle> */}
       </FlexBox>
       <FlexBox
         style={{
@@ -103,13 +103,13 @@ export const TopBar: React.FC<TopBarProps> = ({
           justifyContent: "flex-end",
         }}
       >
-        <IconButton
+        {/* <IconButton
           icon="help"
           onClick={onHelpToggle}
           title="Keyboard Shortcuts (H)"
-        />
+        /> */}
         <b style={{ fontSize: "80%", color: loading ? "orange" : "" }}>
-          {loading ? "LOADING" : loaded ? "READY" : ""}
+          {loading ? "正则加载数据..." : loaded ? "" : ""}
         </b>
         {!loading && loaded ? (
           <IconButton

@@ -47,11 +47,54 @@ export const setLabels = (globe: GlobeInstance, earthData: LocationQuantityInfo[
             
             el.appendChild(dot);
             el.appendChild(label);
-            el.style.pointerEvents = 'none';
+            el.style.pointerEvents = 'auto'; // 启用鼠标事件以支持tooltip
             el.style.userSelect = 'none';
             el.style.display = 'flex';
             el.style.flexDirection = 'column';
             el.style.alignItems = 'center';
+            el.style.cursor = 'pointer'; // 添加鼠标指针样式
+            
+            // 添加tooltip功能
+            let tooltipDiv: HTMLDivElement | null = null;
+            let updatePosition: ((event: MouseEvent) => void) | null = null;
+            
+            el.addEventListener('mouseenter', (e) => {
+                // 创建tooltip
+                tooltipDiv = document.createElement('div');
+                tooltipDiv.innerHTML = renderPortTooltip({
+                    location: it.location,
+                    latitude: it.latitude,
+                    longitude: it.longitude,
+                    quantity: it.quantity,
+                });
+                tooltipDiv.style.position = 'absolute';
+                tooltipDiv.style.pointerEvents = 'none';
+                tooltipDiv.style.zIndex = '10000';
+                tooltipDiv.style.transform = 'translate(10px, -50%)';
+                document.body.appendChild(tooltipDiv);
+                
+                // 更新tooltip位置
+                updatePosition = (event: MouseEvent) => {
+                    if (tooltipDiv) {
+                        tooltipDiv.style.left = event.clientX + 'px';
+                        tooltipDiv.style.top = event.clientY + 'px';
+                    }
+                };
+                
+                updatePosition(e as any);
+                el.addEventListener('mousemove', updatePosition);
+            });
+            
+            el.addEventListener('mouseleave', () => {
+                if (tooltipDiv) {
+                    document.body.removeChild(tooltipDiv);
+                    tooltipDiv = null;
+                }
+                if (updatePosition) {
+                    el.removeEventListener('mousemove', updatePosition);
+                    updatePosition = null;
+                }
+            });
             
             return el;
         })
