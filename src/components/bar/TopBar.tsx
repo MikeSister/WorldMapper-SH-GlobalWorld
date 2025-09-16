@@ -101,9 +101,9 @@ const ViewToggle = () => {
 
 export const TopBar: React.FC<TopBarProps> = ({
     onMenuClick,
-    onHelpToggle,
+    // onHelpToggle,
     onAISummaryToggle,
-    isAISummaryExpanded,
+    // isAISummaryExpanded,
 }) => {
     const loader = useAppSelector((state) => state.loader);
     const [isLoading, setIsLoading] = useState<boolean>(false);
